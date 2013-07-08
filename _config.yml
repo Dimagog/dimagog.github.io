@@ -337,8 +337,8 @@ github_projects :
   header : GitHub Projects
   projects :
   - project :
-    name : gh-pages-blog
-    url : https://github.com/thedereck/gh-pages-blog
+    name : Dimagog
+    url : http://dimagog.github.io/
 
 
 # These are links to other websites outside of the blog that are not part of
@@ -552,8 +552,8 @@ disqus :
 #   google_analytics :
 #     enabled : true
 #     tracking_id : UA-1234567
-analytics :
-  enabled : false
-  google_analytics :
-    enabled : false
+#analytics :
+#  enabled : false
+#  google_analytics :
+#    enabled : false
 #    tracking_id : UA-1234567
