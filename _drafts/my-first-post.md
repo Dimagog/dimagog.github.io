@@ -9,9 +9,23 @@ That could take multiple lines
 
 but then ends
 
-Here goes some text
+Here goes some text:
 
-{% highlight clojure %}
+{% highlight clojure linenos %}
 (defn f [x]
   (* x x))
-<% endhighlight %}
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+(defn f [x]
+  (* x x))
+{% endhighlight %}
