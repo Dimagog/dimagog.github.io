@@ -11,7 +11,7 @@ but then ends
 
 Here goes some text
 
-```Clojure
+{% highlight ruby %}
 (defn f [x]
   (* x x))
-```
+{% endhighlight %}
