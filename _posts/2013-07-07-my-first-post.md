@@ -11,7 +11,7 @@ but then ends
 
 Here goes some text
 
-{% highlight ruby %}
+{% highlight clj %}
 (defn f [x]
   (* x x))
 {% endhighlight %}
