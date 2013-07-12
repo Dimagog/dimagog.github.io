@@ -15,3 +15,8 @@ Here goes some text
 (defn f [x]
   (* x x))
 <% endhighlight %}
+
+```Clojure
+(defn f [x]
+  (* x x))
+```
