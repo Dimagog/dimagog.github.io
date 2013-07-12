@@ -1,15 +1,20 @@
 ---
 layout: page
-title: Recent Posts
+title: Latest Posts
 tagline: Welcome to my Blog
 ---
 {% include JB/setup %}
 
-<ul class="posts">
+<table class="posts">
   {% for post in site.posts %}
-    <li>
-      <h4><i>{{ post.date | date_to_string }}</i> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
-      <span>{{ post.excerpt }}</span>
-    </li>
+    <tr>
+      <td>
+        <h5><i>{{ post.date | date_to_string }}</i> &raquo;</h5>
+      </td>
+      <td width="85%">
+        <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
+        <span>{{ post.excerpt }}</span>
+      </td>
+    </tr>
   {% endfor %}
-</ul>
+</table>
