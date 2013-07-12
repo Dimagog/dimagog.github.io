@@ -11,11 +11,6 @@ but then ends
 
 Here goes some text
 
-{% highlight clojure %}
-(defn f [x]
-  (* x x))
-<% endhighlight %}
-
 ```Clojure
 (defn f [x]
   (* x x))
