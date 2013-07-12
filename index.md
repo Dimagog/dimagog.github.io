@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Latest Posts
-tagline: Welcome to my Blog
+title: Dimagog Blog
+tagline: Latest Posts
 ---
 {% include JB/setup %}
 

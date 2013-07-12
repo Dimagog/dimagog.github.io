@@ -4,9 +4,14 @@ category : clojure
 tagline: "Some smart tagline"
 tags : [clojure, clojurescript, core.async, knockout]
 ---
-{% include JB/setup %}
+Summary of my first post
+That could take multiple lines
+
+but then ends
 
 Here goes some text
 
-    (defn f [x]
-      (* x x))
+{% highlight clojure %}
+(defn f [x]
+  (* x x))
+<% endhighlight %}
