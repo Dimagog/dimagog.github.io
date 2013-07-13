@@ -76,7 +76,7 @@ You may think that callback could be simplified as:
 routine which will execute *eventually*. By the time it runs `event` does not have the result anymore.
 
 Also it's a good idea to `close!` the channel `ch` after we write the result `res`, so if anyone tries
-to read from `ch` again by mistake will get `nil` returned immediately.
+to read from `ch` again by mistake, they will get `nil` returned immediately.
 
 ## Using GET function (even cooler stuff)
 Let's define a helper `log` function first:
