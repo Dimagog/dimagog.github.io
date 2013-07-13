@@ -3,6 +3,7 @@ layout: post
 category : clojure
 tagline: "Some smart tagline"
 tags : [clojure, clojurescript, core.async, knockout]
+noexcerpt: true
 ---
 Summary of my first post
 That could take multiple lines

@@ -6,7 +6,7 @@ tagline: Latest Posts
 {% include JB/setup %}
 
 {% assign sumwords = 50 %}
-{% assign maxposts = 3 %}
+{% assign maxposts = 10 %}
 
 <table class="posts">
   {% for post in site.posts limit: maxposts %}
@@ -16,10 +16,15 @@ tagline: Latest Posts
       </td>
       <td width="85%">
         <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
-        <span>{{ post.excerpt }}</span>
         {% assign postwords = post.content | strip_html %}
-        <span>{{ postwords | truncatewords: sumwords | replace: '<p>',' ' | replace: '</p>',' '}}</span>
         {% assign totalwords = postwords | number_of_words %}
+        {% unless post.noexcerpt %}
+          {% assign excerptwords = post.excerpt | strip_html %}
+          {% assign sumwords = excerptwords | number_of_words %}
+          <span>Excerpt: {{ excerptwords }}</span>
+        {% else %}
+          <span>Summary: {{ postwords | truncatewords: sumwords }}</span>
+        {% endunless %}
         {% if totalwords > sumwords %}
           <a href="{{ BASE_PATH }}{{ post.url }}"><i>continue reading ({{totalwords}} words)</i></a>
         {% endif %}
