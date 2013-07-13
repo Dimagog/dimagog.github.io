@@ -95,7 +95,7 @@ And now we can call our `GET` function and print the result:
 We have sequential-looking code that looks like it's blocking, but it's not. It is fully asyncronous!
 
 ## <a name="src"> </a> Source code
-Full source code [can be found here][Gist].
+Full source code [can be found on GitHub][github].
 
 If you want to build and run it locally, execute:
 
@@ -103,4 +103,4 @@ If you want to build and run it locally, execute:
     cd AsyncGET
     lein ring server
 
-[Gist]: https://github.com/Dimagog/AsyncGET
+[github]: https://github.com/Dimagog/AsyncGET
