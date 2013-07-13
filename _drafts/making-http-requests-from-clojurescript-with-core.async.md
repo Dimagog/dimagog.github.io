@@ -16,10 +16,10 @@ sequential-looking one.
 
 ## Leningen config (boring stuff)
 
+*Note: Code samples include only interesting parts, [full source code is available below](#src).*
+
 {% highlight clojure %}
 (defproject ...
-  :plugins [[lein-cljsbuild "0.3.2"]]
-  :hooks [leiningen.cljsbuild]
   :repositories {
     "sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"
   }
@@ -31,7 +31,7 @@ sequential-looking one.
 {% endhighlight %}
 
 We need Sonatype because it is hosting SNAPSHOTs, and there is no release version of [core.async][] available yet.
-Also I'm not using the latest version of ClojureScript because Light Table does not like it.
+Also I'm not using the latest version of ClojureScript because [Light Table](http://www.lighttable.com/) does not like it.
 
 ## Defining GET function (cool stuff)
 First the `ns` header:
@@ -56,11 +56,15 @@ when it completes. The callback simply extracts the result and writes it to the 
               (fn [event]
                 (let [res (-> event .-target .getResponseText)]
                   (go (>! ch res)
-                  (close! ch)))))
+                      (close! ch)))))
     ch))
 {% endhighlight %}
 
+We create channel `ch` of size 1 (default is 0) because there is no reason to block callback until reader arrives.
+Instead it writes the response once it becomes available and disappears.
+
 You may think that callback could be simplified as:
+
 {% highlight clojure %}
 ; WARNING: Broken code
               (fn [event]
@@ -86,3 +90,16 @@ And now we can call our `GET` function and print the result:
 (go
   (log (<! (GET "http://dimagog.github.io/sitemap.txt"))))
 {% endhighlight %}
+
+We have sequential-looking code that looks like it's blocking, but it's not. It is fully asyncronous!
+
+## <a name="src"> </a> Full source code
+Full source can be found in [this Gist][Gist].
+
+If you want to build and run it locally, execute:
+
+    git clone https://gist.github.com/5989832.git
+    cd 5989832
+    lein ring server
+
+[Gist]: https://gist.github.com/Dimagog/5989832
