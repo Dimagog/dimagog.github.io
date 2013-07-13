@@ -21,9 +21,9 @@ tagline: Latest Posts
         {% unless post.noexcerpt %}
           {% assign excerptwords = post.excerpt | strip_html %}
           {% assign sumwords = excerptwords | number_of_words %}
-          <span>Excerpt: {{ excerptwords }}</span>
+          <span>{{ excerptwords }}</span>
         {% else %}
-          <span>Summary: {{ postwords | truncatewords: sumwords }}</span>
+          <span>{{ postwords | truncatewords: sumwords }}</span>
         {% endunless %}
         {% if totalwords > sumwords %}
           <a href="{{ BASE_PATH }}{{ post.url }}"><i>continue reading ({{totalwords}} words)</i></a>
