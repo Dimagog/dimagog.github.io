@@ -4,7 +4,6 @@ permalink: /blog/:categories/:year/:month/:day/:title
 excerpt_separator: "\n#"
 
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md", "test"]
-auto: false
 pygments: true
 
 # Themes are encouraged to use these universal variables 
@@ -14,7 +13,7 @@ title : Dimagog Blog
 tagline: Something about some things
 author :
   name : Dmitry Kakurin
-  email : blah@email.test
+  email : dmitry.kakurin@gmail.com
   github : Dimagog
   twitter : Dimaphone
   # feedburner : feedname
@@ -82,9 +81,9 @@ JB :
   # Set 'provider' to false to turn commenting off globally.
   #
   comments :
-    provider : none # disqus
+    provider : disqus
     disqus :
-      short_name : dimagog
+      short_name : dimagogblog
     livefyre :
       site_id : 123
     intensedebate :

@@ -3,6 +3,7 @@ layout: post
 category: personal
 tagline: Dmitry Kakurin (dimagog)
 tag: personal
+disable_comments: false
 ---
 I work for [Microsoft] on [Windows Azure][] team where I (mostly) program in C#.
 And in my spare time I love to play with new and interesting languages and technologies

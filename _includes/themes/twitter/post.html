@@ -21,8 +21,10 @@
       {% endif %}
       </ul>
     </div>
-    <hr>
-    {% include JB/comments %}
+    {% unless page.disable_comments %}
+      <hr>
+      {% include JB/comments %}
+    {% endunless %}
   </div>
   
   <div class="span4">
