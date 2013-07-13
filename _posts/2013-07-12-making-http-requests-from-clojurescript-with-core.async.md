@@ -1,8 +1,9 @@
 ---
 layout: post
-title: Making http requests from ClojureScript with core.async
+title: Making HTTP requests from ClojureScript with core.async
 categories: [clojure, clojurescript]
 tags: [clojure, clojurescript, async, core.async]
+date: 2013-07-12 23:40
 ---
 I've always been a big fan of `async/await` feature in C# (long before it was publicly available).
 So, naturally, I was very excited to read the [announcement] about Clojure [core.async][] library. 
@@ -93,13 +94,13 @@ And now we can call our `GET` function and print the result:
 
 We have sequential-looking code that looks like it's blocking, but it's not. It is fully asyncronous!
 
-## <a name="src"> </a> Full source code
-Full source can be found in [this Gist][Gist].
+## <a name="src"> </a> Source code
+Full source code [can be found here][Gist].
 
 If you want to build and run it locally, execute:
 
-    git clone https://gist.github.com/5989832.git
-    cd 5989832
+    git clone https://github.com/Dimagog/AsyncGET.git
+    cd AsyncGET
     lein ring server
 
-[Gist]: https://gist.github.com/Dimagog/5989832
+[Gist]: https://github.com/Dimagog/AsyncGET
