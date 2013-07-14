@@ -70,7 +70,7 @@ You may think that callback could be simplified as:
 ; WARNING: Broken code
               (fn [event]
                 (go (>! ch (-> event .-target .getResponseText))
-                (close! ch)))))
+                    (close! ch)))))
 {% endhighlight %}
 **but that does not work**. This version tries to extract result from `event` inside `go`
 routine which will execute *eventually*. By the time it runs `event` does not have the result anymore.
