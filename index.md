@@ -15,7 +15,12 @@ tagline: Latest Posts
         <h5><i>{{ post.date | date_to_string }}</i> &raquo;</h5>
       </td>
       <td width="85%">
-        <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
+        <h4><a href="{{ BASE_PATH }}{{ post.url }}">
+          {{ post.title }}
+          {% if post.tagline %}
+            <small>{{post.tagline}}</small>
+          {% endif %}
+        </a></h4>
         {% assign postwords = post.content | strip_html %}
         {% assign totalwords = postwords | number_of_words %}
         {% unless post.noexcerpt %}
