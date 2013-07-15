@@ -1,4 +1,4 @@
-# AsyncGET
+# ClojureAllTheWay1
 
 This is sample code for
 [Clojure All The Way - The Server](http://dimagog.github.io/blog/clojure/clojurescript/2013/07/12/making-http-requests-from-clojurescript-with-core.async/)
