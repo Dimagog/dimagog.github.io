@@ -51,7 +51,7 @@ Now let's add an `echo` API that simply echoes back the client's HTTP request.
 
 Of cause we are not going to do heavy-lifting ourselves - that's the whole point of [Ring][].
 To paraphrase Apple's commercials "there is a *middleware* for that".
-And it's called `ring.middleware.format-response`.
+And it's called `ring.middleware.format-response`. Let's use it:
 
 {% highlight clojure linenos %}
 (defroutes handler
@@ -68,7 +68,7 @@ And it's called `ring.middleware.format-response`.
 The `app` was renamed to `handler` *(line 1)* and new `app`
 wraps this `handler` into `wrap-clojure-response` *(lines 8-9)*.
 
-The new route *(lines 3-5)* simply takes a `request` (a Clojure map) and builds a
+The new [Compojure] route *(lines 3-5)* simply takes a `request` (a Clojure map) and builds a
 200-response from it setting `:body` to `request` (still a Clojure map).
 
 **And the `wrap-clojure-response` *middleware* is the one converting Clojure map `:body` returned
@@ -76,7 +76,7 @@ by `handler` to [edn-encoded][edn] textual representation.**
 
 There is one problem with this code: `:body` of `request` that we are sending back is not
 a Clojure data structure. It's a Java object of `HttpInput org.eclipse.jetty.server.HttpInput` type.
-That's not good: it cannot be [edn-encoded][edn] and Client won't be able to read it anyway.
+That's not good: it cannot be [edn-encoded][edn] and Client won't be able to decode it anyway.
 A small tweak removes it from the response we are sending *(call to `dissoc` in line 3)*:
 
 {% highlight clojure linenos %}
@@ -85,18 +85,22 @@ A small tweak removes it from the response we are sending *(call to `dissoc` in 
         :body (dissoc request :body)})
 {% endhighlight %}
 
-[prev]: {{ site.url }}{% post_url 2013-07-12-making-http-requests-from-clojurescript-with-core.async %}
+## Testing
+To test it we can use a slightly modified client from my [earlier post][earlier].
+And sure enough it shows client's request returned back to us.
 
-{% highlight clojure linenos %}
-{% endhighlight %}
+But ClojureScript Client still treats response as text (not structured Clojure data).
+We'll deal with it in the next post.
 
-## <a name="src"> </a> Source code TODO
+[earlier]: {{ site.url }}{% post_url 2013-07-12-making-http-requests-from-clojurescript-with-core.async %}
+
+## <a name="src"> </a> Source code
 Full source code [can be found on GitHub][github].
 
 If you want to build and run it locally, execute:
 
-    git clone https://github.com/Dimagog/AsyncGET.git
-    cd AsyncGET
+    git clone https://github.com/Dimagog/dimagog.github.io.git -b ClojureAllTheWay1 --single-branch ClojureAllTheWay1
+    cd ClojureAllTheWay1
     lein ring server
 
-[github]: https://github.com/Dimagog/AsyncGET
+[github]: https://github.com/Dimagog/dimagog.github.io/tree/ClojureAllTheWay1
