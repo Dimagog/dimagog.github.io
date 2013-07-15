@@ -22,8 +22,6 @@ simple API to serve Clojure data structures in their natural text representation
 The basics of creating [Ring][]+[Compojure][] Web server are covered very well on Interwebs.
 In this post I'll only focus on creating API returning [edn-encoded][edn] Clojure data.
 
-{% include JB/setup %}
-
 ## Serving the site itself (static files)
 
 *Note: Code samples include only interesting parts, [full source code is available below](#src).*
@@ -47,7 +45,7 @@ Let's start with vanilla web server that simply serves static files:
 Now let's add an `echo` API that simply echoes back the client's HTTP request.
 
 *To be precise:* upon receiving HTTP `GET /api/echo` request the server will respond with
-`200 OK` and body containing [edn-encoded][edn] Clojure representation of request (a map of maps/vectors).
+`200 OK` and body containing [edn-encoded][edn] Clojure representation of request (a map of maps, strings and numbers).
 
 Of cause we are not going to do heavy-lifting ourselves - that's the whole point of [Ring][].
 To paraphrase Apple's commercials "there is a *middleware* for that".
@@ -86,7 +84,7 @@ A small tweak removes it from the response we are sending *(call to `dissoc` in 
 {% endhighlight %}
 
 ## Testing
-To test it we can use a slightly modified client from my [earlier post][earlier].
+To test our Server we can use a slightly modified client from my [earlier post][earlier].
 And sure enough it shows client's request returned back to us.
 
 But ClojureScript Client still treats response as text (not structured Clojure data).
