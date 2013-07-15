@@ -1,4 +1,4 @@
-(defproject clojure.atw "0.1.0"
+(defproject ClojureAllTheWay "0.1.0"
   :plugins [[lein-cljsbuild "0.3.2"]
             [lein-ring "0.8.6"]]
   :hooks [leiningen.cljsbuild]

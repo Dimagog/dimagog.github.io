@@ -25,7 +25,6 @@
     ch))
 
 (go
-  (<! (async/timeout 2000))
   (log "Sending GET ...")
   (dom/set-text! (sel1 :#log) (<! (GET "/api/echo")))
   (log "Finished"))
