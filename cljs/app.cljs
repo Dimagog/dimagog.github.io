@@ -25,9 +25,7 @@
     ch))
 
 (go
-  ; delay for 2 seconds to make it clear that page updates dynamically after initial load
-  (log "Delaying ...")
   (<! (async/timeout 2000))
   (log "Sending GET ...")
-  (dom/set-text! (sel1 :#log) (<! (GET "/sitemap.txt")))
+  (dom/set-text! (sel1 :#log) (<! (GET "/api/echo")))
   (log "Finished"))
