@@ -1,7 +1,8 @@
 (ns app
   (:require
     [goog.net.XhrIo :as xhr]
-    [cljs.core.async :as async :refer [chan close!]]
+    [cljs.reader :refer [read-string]]
+    [cljs.core.async :as async :refer [chan close! put!]]
     [dommy.core  :as dom]
   )
   (:require-macros
@@ -19,12 +20,16 @@
   (let [ch (chan 1)]
     (xhr/send url
               (fn [event]
-                (let [res (-> event .-target .getResponseText)]
-                  (go (>! ch res)
-                      (close! ch)))))
+                  (put! ch (-> event .-target .getResponseText))
+                  (close! ch)))
     ch))
 
+(defn get-edn [url]
+  (go 
+    (-> (GET url) <! read-string)))
+
 (go
-  (log "Sending GET ...")
-  (dom/set-text! (sel1 :#log) (<! (GET "/api/echo")))
+  (log "Calling get-edn ...")
+  (dom/set-text! (sel1 :#log)
+                 (-> (get-edn "/api/echo") <! :headers))
   (log "Finished"))
