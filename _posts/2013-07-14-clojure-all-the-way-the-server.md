@@ -88,9 +88,10 @@ To test our Server we can use a slightly modified client from my [earlier post][
 And sure enough it shows client's request returned back to us.
 
 But ClojureScript Client still treats response as text (not structured Clojure data).
-We'll deal with it in the next post.
+We'll deal with it in the [next post][nextpost].
 
 [earlier]: {{ site.url }}{% post_url 2013-07-12-making-http-requests-from-clojurescript-with-core.async %}
+[nextpost]: {{ site.url }}{% post_url 2013-07-18-clojure-all-the-way-the-client %}
 
 ## <a name="src"> </a> Source code
 Full source code [can be found on GitHub][github].

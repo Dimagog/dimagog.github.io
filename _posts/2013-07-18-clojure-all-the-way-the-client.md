@@ -2,21 +2,23 @@
 layout: post
 title: Clojure All The Way - The Client
 categories: [clojure, clojurescript]
-tags: [clojure, clojurescript, client]
+tags: [clojure, clojurescript, client, core.async, async]
 tagline: Part 2 of mini-series
 ---
 
-This is a second article in mini-series. 
+This is a second article in mini-series. The goal of mini-series is to create a Client-Server environment
+where Clojure data structures are pervasive and we don't have to deal with JSON and JavaScript objects 
+in Clojure/ClojureScript land (as much as possible).
 
-The [previous post][serverpost] dealt with the Server part, now let's look at the Client.
+The [previous post][serverpost] dealt with the Server part, now let's look at the Client side.
 
 ## Starting Point
 
-We start where we've left off in the [previous post][serverpost]: we have a Server
+We start where we left off in the [previous post][serverpost]: we have a Server
 that implements `echo` HTTP API and calling it returns [edn-encoded][edn] data.
 
 And we have a Client capable of calling this API and receiving data, but it still
-treats it as text, and not structured Clojure data. The client was actually explained
+treats it as text, and not as structured Clojure data. The client was actually explained
 not in the last post, but in [post before that][clientpost].
 
 [edn]: https://github.com/edn-format/edn
@@ -64,7 +66,7 @@ Now back to our main topic ...
 
 Let's add a new function `get-edn` that uses `GET` function above to get data from the Server, and then
 converts it to Clojure data structures, i.e. [edn-decodes][edn] it. It is actually very simple, all we need
-is to call `read-string` function from `cljs.reader` namespace.
+to do is call `read-string` function from `cljs.reader` namespace.
 
 And in addition to being useful for our purposes it will also show how async functions compose.
 
@@ -85,10 +87,10 @@ But what happens next? How is `result` propagated to the caller of `get-edn`? To
 what `get-edn` returns. Following normal Clojure rules `get-edn` returns the value returned by `go` form.
 This is a `channel`, now who writes to this `channel`? The `go` form does. Here is how `go` works:
 * first it creates a `channel` and promptly returns it to the caller
-* *eventually* it evaluates all statement inside, potentially "parking" this activity when `<!` and `>!` forms are used inside
+* *eventually* it evaluates all statement inside, potentially "parking" this activity when `<!` and `>!` forms are encountered
 * it writes the value of the last statement to the `channel`, `close!`es the `channel` and completes.
 
-In our case the last and only statement inside `go` is our "conveyor" producing `result` defined in pervious paragraph,
+In our case the last and only statement inside `go` is our "conveyor" producing `result` defined two paragraphs ago,
 i.e. decoded response. The `go` form writes `result` to the `channel` it has created and this is how it gets to `get-edn` caller.
 
 **And this is how async functions compose!** Notice that we didn't even have to create a `channel` explicitly in `get-edn`!
@@ -99,7 +101,7 @@ and actually ignored the return value. So we had to propagate it to `GET` caller
 
 ## Calling get-edn function
 
-To prove to ourselves that `get-edn` returns Clojure map let's call some function on it before pushing it to DOM,
+To prove to ourselves that `get-edn` returns Clojure map let's call some function on it before displaying it,
 for example let's extract only `:headers`:
 
 {% highlight clojure linenos %}
@@ -116,7 +118,8 @@ Then we call `:headers` in *line 5* to get only headers portion of respose provi
 
 And if you run the sample code, you'll see the headers displayed.
 
-Now this is nice, but the way they are displayed is kind of lame. We'll do something about it in the next post.
+Now this is nice, but the way they are displayed is kind of lame. We'll do something about it in the next post, while staying on topic of
+using Clojure data structures as much as possible.
 
 ## <a name="src"> </a> Source code
 Full source code [can be found on GitHub][github].
