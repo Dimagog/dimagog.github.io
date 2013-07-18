@@ -1,7 +1,7 @@
 # ClojureAllTheWay2
 
 This is sample code for
-[Clojure All The Way - The Server](http://dimagog.github.io//blog/clojure/2013/07/14/clojure-all-the-way-the-server/)
+[Clojure All The Way - The Client](http://dimagog.github.io/blog/clojure/clojurescript/2013/07/18/clojure-all-the-way-the-client/)
 post on
 [Dimagog Blog](http://dimagog.github.io).
 
