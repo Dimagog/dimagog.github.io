@@ -3,9 +3,22 @@ body
     background-color: white;
 }
 
-div#log
+table
 {
-    font-family: monospace;
-    border-width: 1px;
-    border-style: dashed;
+    border-collapse:collapse;
+}
+
+table, th, td
+{
+    border: 2px solid green;
+    vertical-align: top;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+th
+{
+  background-color: rgb(167, 201, 66);
+  color: white;
 }

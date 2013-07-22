@@ -1,15 +1,28 @@
 <!DOCTYPE html>
 <head>
-    <meta charset="utf-8" />
-    <title>Clojure All The Way - The Client</title>
-    <link rel="stylesheet" href="app.css" type="text/css" />
-    <script defer src="app.js"></script>
+  <meta charset="utf-8" />
+  <title>Clojure All The Way - Knockout</title>
+  <link rel="stylesheet" href="app.css" type="text/css" />
+  <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
-    <h1>Clojure All The Way - The Client</h1>
-    <a href="http://dimagog.github.io/blog/clojure/clojurescript/2013/07/18/clojure-all-the-way-the-client/">
-      Read the post on Dimagog Blog
-    </a>
-    <p>Http GET result will appear here:</p>
-    <div id="log"></div>
+  <h1>Clojure All The Way - Knockout</h1>
+  <a href="http://dimagog.github.io/blog/clojure/clojurescript/2013/07/18/clojure-all-the-way-the-client/">
+    Read the post on Dimagog Blog
+  </a>
+  <h2>HTTP headers of our request:</h2>
+  <div id="content">
+    <table>
+      <thead>
+        <tr><th>Header</th><th>Value</th></tr>
+      </thead>
+      <tbody data-bind="foreach: $root">
+        <tr>
+          <td data-bind="text: $data[0]"></td>
+          <td data-bind="text: $data[1]"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </body>

@@ -2,7 +2,7 @@
   (:require
     [goog.net.XhrIo :as xhr]
     [cljs.reader :refer [read-string]]
-    [cljs.core.async :as async :refer [chan close! put!]]
+    [cljs.core.async :as async :refer [chan close! put! timeout]]
     [dommy.core  :as dom]
   )
   (:require-macros
@@ -11,8 +11,8 @@
   )
 )
 
-(defn log [s]
-  (.log js/console (str s)))
+(defn log [& s]
+  (.log js/console (apply str s)))
 
 (log "Started")
 
@@ -30,6 +30,7 @@
 
 (go
   (log "Calling get-edn ...")
-  (dom/set-text! (sel1 :#log)
-                 (-> (get-edn "/api/echo") <! :headers))
+  (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
+    (log headers)
+    (ko/applyBindings (clj->js headers)))
   (log "Finished"))
