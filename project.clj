@@ -27,5 +27,13 @@
         :output-to "html/app.js",
         :warnings true,
         :optimizations :whitespace}}
+      {:id "opt" :source-paths ["cljs"],
+       :incremental false,
+       :compiler
+       {:pretty-print false,
+        :output-to "html/app.js",
+        :externs ["cljs/ko.externs.js"]
+        :warnings true,
+        :optimizations :advanced}}
      ]}
 )
