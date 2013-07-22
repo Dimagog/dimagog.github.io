@@ -35,13 +35,18 @@
         "read"  (fn [] (state))
         "write" (fn [new] (state (clj->js new)))))))
 
-(def view-model (observable []))
+(defn observable-ref [r]
+  (let [state (ko/observable (clj->js @r))]
+    (add-watch r state (fn [obs _ _ new] (obs (clj->js new))))
+    state))
 
-(ko/applyBindings view-model)
- 
+(def view-model (atom []))
+
+(ko/applyBindings (observable-ref view-model))
+
 (go
   (log "Calling get-edn ...")
   (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
     (log headers)
-    (view-model headers))
+    (reset! view-model headers))
   (log "Finished"))
