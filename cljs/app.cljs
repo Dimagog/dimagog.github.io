@@ -28,9 +28,20 @@
   (go 
     (-> (GET url) <! read-string)))
 
+(defn observable [val]
+  (ko/computed
+    (let [state (ko/observable (clj->js val))]
+      (js-obj
+        "read"  (fn [] (state))
+        "write" (fn [new] (state (clj->js new)))))))
+
+(def view-model (observable []))
+
+(ko/applyBindings view-model)
+ 
 (go
   (log "Calling get-edn ...")
   (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
     (log headers)
-    (ko/applyBindings (clj->js headers)))
+    (view-model headers))
   (log "Finished"))
