@@ -20,5 +20,5 @@
 (def app (-> handler
              wrap-clojure-response))
   
-(defonce server
+#_(defonce server
   (run-jetty #'app {:port 3000 :join? false}))
