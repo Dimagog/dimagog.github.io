@@ -118,7 +118,8 @@ Then we call `:headers` in *line 5* to get only headers portion of respose provi
 
 And if you run the sample code, you'll see the headers displayed.
 
-Now this is nice, but the way they are displayed is kind of lame. We'll do something about it in the next post, while staying on topic of
+Now this is nice, but the way they are displayed is kind of lame. We'll do something about it in the
+[next post]({{ site.url }}{% post_url 2013-07-22-clojure-all-the-way-knockout %}), while staying on topic of
 using Clojure data structures as much as possible.
 
 ## <a name="src"> </a> Source code
