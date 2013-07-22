@@ -48,5 +48,13 @@
   (log "Calling get-edn ...")
   (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
     (log headers)
+    (doseq [h headers]
+      (<! (timeout 500))
+      (swap! view-model conj h))
+    (<! (timeout 1000))
+    (while (seq @view-model)
+      (swap! view-model rest)
+      (<! (timeout 500)))
+    (<! (timeout 1000))
     (reset! view-model headers))
   (log "Finished"))
