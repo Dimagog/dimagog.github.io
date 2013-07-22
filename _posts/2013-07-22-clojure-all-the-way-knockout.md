@@ -81,7 +81,7 @@ JavaScript `Array` of `Arrays`:
 I know the whole premise of the series is to **avoid** such explicit conversion. Please bear with me,
 we'll deal with it in following sections.
 
-### Adding [KO][] bindings to HTML
+### Adding Knockout bindings to HTML
 
 We need to change our `default.html` as follows (only relevant parts are shown):
 
