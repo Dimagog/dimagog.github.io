@@ -113,16 +113,142 @@ now we can change our [KO][] bindings in HTML file to use `get` method:
 Not too bad, and rather straight-forward. At this point our Client works again and we can see the table
 of HTTP headers rendered correctly.
 
+## The Hard part - Outer vector
+
+The only piece of data conversion logic we have left is `into-array` calls that convert our outer `vector`
+into JavaScript `Array`. If we get rid of it - we've reached our goal.
+
+### Why it's hard
+
+But this is where it becomes tricky. The problem is that we use [KO][]'s `foreach` binding to iterate
+over our collection of headers:
+
 {% highlight clojure linenos %}
+<tbody data-bind="foreach: $root">
 {% endhighlight %}
+
+And `foreach` expects it to be JavaScript `Array`. **Period.** No kidding.
+
+I've tried to teach [KO][] to iterate over custom collection, and [I've asked KO group][ko_thread].
+It's not possible for now.
+
+[ko_thread]: https://groups.google.com/forum/#!topic/knockoutjs/P2XXc9q6k04
+
+### Should we give up?
+
+At this point we still have achieved a tangible improvement: the *elements* of our collection are
+not converted anymore, so even when we create a copy of outer vector it is a shallow copy:
+only the "skeleton" is copied, but elements are reused. And they potentially have a bigger memory
+footprint.
+
+However there is a saying:
+> If the mountain will not come to Muhammad, then Muhammad will go to the mountain.
+
+In our case: if `foreach` would not take anything but `Array` then `vector` should become an `Array`.
+Or at least pretend to be one.
+
+Now how do we pretend? The access pattern from [KO][] is to read `length` property first and then
+access fields `[0], [1] ... [length-1]`. We can easily add all these fields to our `vector` but
+it does not buy us anything: we would copy all `vector` elements into fields `0`, `1`, etc.
+It's no better than `into-array` call.
+
+If only there was a way to intercept field access calls in JavaScript ...
+
+### WARNING: Danger Zone
+
+To the best of my knowledge there is no portable way to intercept field access in JavaScript.
+So we'll have to use **JavaScript "Experimental Features"** that are already implemented by some
+modern browsers (Firefox and Chrome support what we need), but are not standard yet and may not even be enabled by default.
+
+**This is why the rest of this post is not practical \[for now\] but hopefully still entertaining.**
+
+If you are willing to proceed and use Chrome you must navigate to <a href="chrome://flags">chrome://flags</a>
+(enter it manually in address bar, navigating from this page would not work), find "Enable Experimental JavaScript"
+feature and enable it.
+
+### ECMAScript 6 Proxy API
+
+ECMAScript 6 draft specifies [Direct Proxies][] - a mechanism to create a proxies that:
+> ... enable ES programmers to represent virtualized objects (proxies). In particular,
+> to enable writing generic abstractions that can intercept property access on ES objects.
+
+[direct proxies]: http://wiki.ecmascript.org/doku.php?id=harmony:direct_proxies
+
+Exactly what we need!
+
+### Wrapping outer vector in a Proxy
+
+A new helper function `vector-as-array` makes `vector` sort-of look like `Array` in a narrow sense
+required by [KO][]. This is by no means a full proxy to emulate `Arrays`, just a bare minimum
+required for our purposes.
+
+[KO][] only needs 2 things from `Array`: `length` field and `0`, `1`, etc. fields. Well, we can give it
+what it wants:
+
+{% highlight clojure linenos %}
+(defn vector-as-array
+  "Creates JS Proxy around Clojure vector to make it look like JS array,
+  without copying data"
+  [v]
+  (.create js/Proxy
+           (js-obj
+             "get" 
+               (fn [_ prop]
+                 (case prop
+                   "length" (count v)
+                   (get v prop)))
+             "getPropertyDescriptor"
+               (fn [obj prop]
+                 (.getOwnPropertyDescriptor js/Object js/Array prop)))))
+{% endhighlight %}
+
+The `get` function *(lines 7-11)* checks if property name is `length` and returns `count` of `vector` `v` if it is
+*(line 10)*.
+Otherwise *(line 11)* it simply delegates to `vector`'s `get` function to fetch individual element.
+
+The `getPropertyDescriptor` *(lines 12-14)* is required for when [KO][] does "reflection" on our "array"
+(like checking if "length" property exists) and simply delegates calls to `js/Array`.
+
+### Finish Line
+
+The last change is to modify `observable-ref` once again, this time replacing `into-array` calls
+with newly-created `vector-as-array` function:
+
+{% highlight clojure %}
+(defn observable-ref [r]
+  (let [state (ko/observable (vector-as-array @r))]
+    (add-watch r state (fn [obs _ _ new] (obs (vector-as-array new))))
+    state))
+{% endhighlight %}
+
+And it's hard to believe, but **IT WORKS!**
+
+## Conclusion
+
+Here is a quick summary of our accomplishments:
+
+* We've marshaled Clojure data structure created on the Server all the way to the Client using [edn encoding][edn]
+which is a natural textual representation for Clojure data.
+* We've received this data on the client using core.async to make our code look sequential
+* Then we've called regular Clojure functions on received data to extract and sort the headers
+* Finally we've created [KO][] bindings directly to Clojure data without EVER converting it to JavaScript.
+
+Granted, the final step required sacrifices (using experimental JavaScript features), and this is why
+I've mentioned above that it depends on reader's point of view if final goal was achieved or not.
+
+**I've certainly achieved my goal of learning new interesting technologies and I had lots of fun along the way!**
+
+*And if anyone ever reads this, I hope you did too :-).*
+
+[edn]: https://github.com/edn-format/edn
 
 ## <a name="src"> </a> Source code
 Full source code [can be found on GitHub][github].
 
 If you want to build and run it locally, execute:
 
-    git clone https://github.com/Dimagog/dimagog.github.io.git -b ClojureAllTheWay3 --single-branch ClojureAllTheWay3
-    cd ClojureAllTheWay3
+    git clone https://github.com/Dimagog/dimagog.github.io.git -b ClojureAllTheWay4 --single-branch ClojureAllTheWay4
+    cd ClojureAllTheWay4
     lein ring server
 
-[github]: https://github.com/Dimagog/dimagog.github.io/tree/ClojureAllTheWay3
+[github]: https://github.com/Dimagog/dimagog.github.io/tree/ClojureAllTheWay4
