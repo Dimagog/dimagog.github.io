@@ -35,9 +35,24 @@
         "read"  (fn [] (state))
         "write" (fn [new] (state (clj->js new)))))))
 
+(defn vector-as-array
+  "Creates JS Proxy around Clojure vector to make it look like JS array,
+  without copying data"
+  [v]
+  (.create js/Proxy
+           (js-obj
+             "get" 
+               (fn [_ prop]
+                 (case prop
+                   "length" (count v)
+                   (get v prop)))
+             "getPropertyDescriptor"
+               (fn [obj prop]
+                 (.getOwnPropertyDescriptor js/Object js/Array prop)))))
+
 (defn observable-ref [r]
-  (let [state (ko/observable (into-array @r))]
-    (add-watch r state (fn [obs _ _ new] (obs (into-array new))))
+  (let [state (ko/observable (vector-as-array @r))]
+    (add-watch r state (fn [obs _ _ new] (obs (vector-as-array new))))
     state))
 
 (def view-model (atom []))
@@ -52,15 +67,15 @@
 
 (go
   (log "Calling get-edn ...")
-  (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
+  (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first) vec)]
     (log headers)
-;;     (doseq [h headers]
-;;       (<! (timeout 500))
-;;       (swap! view-model conj h))
-;;     (<! (timeout 1000))
-;;     (while (seq @view-model)
-;;       (swap! view-model rest)
-;;       (<! (timeout 500)))
-;;     (<! (timeout 1000))
+     (doseq [h headers]
+       (<! (timeout 500))
+       (swap! view-model conj h))
+     (<! (timeout 1000))
+     (while (seq @view-model)
+       (swap! view-model pop)
+       (<! (timeout 500)))
+     (<! (timeout 1000))
     (reset! view-model headers))
   (log "Finished"))
