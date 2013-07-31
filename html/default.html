@@ -19,8 +19,8 @@
       </thead>
       <tbody data-bind="foreach: $root">
         <tr>
-          <td data-bind="text: $data[0]"></td>
-          <td data-bind="text: $data[1]"></td>
+          <td data-bind="text: $data.get(0)"></td>
+          <td data-bind="text: $data.get(1)"></td>
         </tr>
       </tbody>
     </table>

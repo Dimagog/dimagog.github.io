@@ -36,25 +36,31 @@
         "write" (fn [new] (state (clj->js new)))))))
 
 (defn observable-ref [r]
-  (let [state (ko/observable (clj->js @r))]
-    (add-watch r state (fn [obs _ _ new] (obs (clj->js new))))
+  (let [state (ko/observable (into-array @r))]
+    (add-watch r state (fn [obs _ _ new] (obs (into-array new))))
     state))
 
 (def view-model (atom []))
 
 (ko/applyBindings (observable-ref view-model))
 
+(aset (aget [] "__proto__")
+      "get"
+      (fn [index]
+        (this-as this
+                 (nth this index))))
+
 (go
   (log "Calling get-edn ...")
   (let [headers (->> "/api/echo" get-edn <! :headers (sort-by first))]
     (log headers)
-    (doseq [h headers]
-      (<! (timeout 500))
-      (swap! view-model conj h))
-    (<! (timeout 1000))
-    (while (seq @view-model)
-      (swap! view-model rest)
-      (<! (timeout 500)))
-    (<! (timeout 1000))
+;;     (doseq [h headers]
+;;       (<! (timeout 500))
+;;       (swap! view-model conj h))
+;;     (<! (timeout 1000))
+;;     (while (seq @view-model)
+;;       (swap! view-model rest)
+;;       (<! (timeout 500)))
+;;     (<! (timeout 1000))
     (reset! view-model headers))
   (log "Finished"))
