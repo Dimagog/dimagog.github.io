@@ -83,6 +83,8 @@ we'll deal with it in following sections.
 
 ### Adding Knockout bindings to HTML
 
+*Note: Code samples include only interesting parts, [full source code is available below](#src).*
+
 We need to change our `default.html` as follows (only relevant parts are shown):
 
 {% highlight html linenos %}
