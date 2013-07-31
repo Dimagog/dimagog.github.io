@@ -277,6 +277,8 @@ Now delay for another second to keep the suspense, and finally restore our heade
 Or is it? *I have tentative plans for another post in the series, but it requires a little more research.*
 I'll keep you posted.
 
+**UPDATE:** Keeping you posted, here is the [next post]({{ site.url }}{% post_url 2013-07-31-clojure-all-the-way-deep-knockout %}).
+
 ## One last thing: optimized builds
 
 Unlike Steve Job's famous "one last things" this one is boring, **but important**. If we try to build

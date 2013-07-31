@@ -2,7 +2,7 @@
 layout: post
 title: Clojure All The Way - Deep Knockout
 categories: [clojure, clojurescript]
-tags: [clojure, clojurescript, javascript, knockout, proxy]
+tags: [clojure, clojurescript, knockout, javascript, proxy]
 tagline: Part 4 of mini-series
 ---
 
@@ -19,11 +19,11 @@ Building up on the [previous post][] we will achieve much deeper integration of 
 ## Our Goal
 
 By the end of the [previous post][] we've implemented `observable-ref` that completely hides
-Clojure-to-JavaScript conversion call to `clj->js`, but *we know* it's still there.
+Clojure-to-JavaScript conversion call to `clj->js` function, but *we know* it's still there.
 
 Maybe it's silly to worry about it, but I still do. So what if we set our mind to get rid of it completely,
-and have "turtles all the way down"? That's my goal for this post and depends on point of view if
-it is achieved here or not :-).
+and have "turtles all the way down"? That's my goal for this post and it's up to the reader
+to decide if it is achieved or not :-).
 
 ## Know the Enemy
 
@@ -47,7 +47,7 @@ Later in this post it will become clear why this is the easy part, but let's sta
 
 ### Shallow outer vector conversion
 We want to stop converting inner `vectors` into `Arrays`. I.e. we don't need a deep recursive conversion of outer
-`vector` that `clj->js` provides but instead want to convert it to `Array` and leave its elements intact.
+`vector` that `clj->js` provides. Instead we want to convert outer `vector` to `Array` and leave its elements intact.
 The result of this step should become `Array` of `vectors` of `strings`.
 
 This is easy, we can use `into-array` function in place of `clj->js` in `observable-ref` function:
@@ -59,7 +59,7 @@ This is easy, we can use `into-array` function in place of `clj->js` in `observa
     state))
 {% endhighlight %}
 
-The only changes compared to [previous post][] are `into-array` calls in *lines 2 and 3* where
+The only changes to this function compared to the [previous post][] are `into-array` calls in *lines 2 and 3* where
 `clj->js` calls used to be.
 
 Of cause if we try to render HTML now it won't work because our [KO][] bindings look like this:
@@ -69,12 +69,12 @@ Of cause if we try to render HTML now it won't work because our [KO][] bindings 
 <td data-bind="text: $data[1]"></td>
 {% endhighlight %}
 
-and `$data[0]` access syntax does not work for `PersistentVectors`.
+and `$data[0]` access syntax does not work for Clojure `vectors`.
 
 ### Accessing PersistentVector elements from JavaScript code
 
-If we examine `PersistentVector` from pure JavaScript perspective we'll see the `nth` method that
-we want to call to get `vector`'s element. It looks like this:
+If we examine `vector`'s "class" `PersistentVector` from pure JavaScript perspective we'll see the `nth` method that
+we want to call to get `vector`'s elements. But it looks like this:
 
 {% highlight javascript %}
 cljs$core$IIndexed$_nth$arity$2: function (coll, n)
@@ -89,7 +89,7 @@ $data.cljs$core$IIndexed$_nth$arity$2($data, 0)
 but it's not very user-friendly to say the least.
 
 Fortunately JavaScript is a very flexible and dynamic language. We can easily extend `PersistentVector` with
-helper `get` function that we need:
+helper `get` method that we need:
 
 {% highlight clojure linenos %}
 (aset (aget [] "__proto__")
@@ -99,11 +99,11 @@ helper `get` function that we need:
                  (nth this index))))
 {% endhighlight %}
 
-We use empty vector `[]` in *line 1* to get to `PersistentVector`'s *prototype*. And add another method
+We use empty vector `[]` in *line 1* to get to `PersistentVector`'s *prototype*. And add a new method
 `get` that takes an `index` and returns element at that index for `this`.
 `this-as` in *line 4* gives us access to `this` from ClojureScript.
 
-now we can change our [KO][] bindings in HTML file to use `get` method:
+Now we can change our [KO][] bindings in HTML file to use our new `get` method:
 
 {% highlight html %}
 <td data-bind="text: $data.get(0)"></td>
@@ -123,7 +123,7 @@ into JavaScript `Array`. If we get rid of it - we've reached our goal.
 But this is where it becomes tricky. The problem is that we use [KO][]'s `foreach` binding to iterate
 over our collection of headers:
 
-{% highlight clojure linenos %}
+{% highlight clojure %}
 <tbody data-bind="foreach: $root">
 {% endhighlight %}
 
@@ -137,7 +137,7 @@ It's not possible for now.
 ### Should we give up?
 
 At this point we still have achieved a tangible improvement: the *elements* of our collection are
-not converted anymore, so even when we create a copy of outer vector it is a shallow copy:
+not converted anymore, so even when we create a copy of outer `vector` it is a shallow copy:
 only the "skeleton" is copied, but elements are reused. And they potentially have a bigger memory
 footprint.
 
@@ -148,8 +148,8 @@ In our case: if `foreach` would not take anything but `Array` then `vector` shou
 Or at least pretend to be one.
 
 Now how do we pretend? The access pattern from [KO][] is to read `length` property first and then
-access fields `[0], [1] ... [length-1]`. We can easily add all these fields to our `vector` but
-it does not buy us anything: we would copy all `vector` elements into fields `0`, `1`, etc.
+read fields `[0], [1] ... [length-1]`. We can easily add all these fields to our `vector` but
+it defeats the purpose: we would copy all `vector` elements into fields `0`, `1`, etc.
 It's no better than `into-array` call.
 
 If only there was a way to intercept field access calls in JavaScript ...
@@ -162,8 +162,9 @@ modern browsers (Firefox and Chrome support what we need), but are not standard 
 
 **This is why the rest of this post is not practical \[for now\] but hopefully still entertaining.**
 
-If you are willing to proceed and use Chrome you must navigate to <a href="chrome://flags">chrome://flags</a>
-(enter it manually in address bar, navigating from this page would not work), find "Enable Experimental JavaScript"
+If you are willing to proceed and use Chrome, you must navigate to <a href="chrome://flags">chrome://flags</a>
+URL (enter it manually in address bar, Chrome blocks navigation to special pages
+from random web sites :-), find **"Enable Experimental JavaScript"**
 feature and enable it.
 
 ### ECMAScript 6 Proxy API
@@ -202,17 +203,17 @@ what it wants:
                  (.getOwnPropertyDescriptor js/Object js/Array prop)))))
 {% endhighlight %}
 
-The `get` function *(lines 7-11)* checks if property name is `length` and returns `count` of `vector` `v` if it is
+The `get` function *(lines 7-11)* checks if accessed property name is `length` and returns `count` of `vector` `v` if it is
 *(line 10)*.
 Otherwise *(line 11)* it simply delegates to `vector`'s `get` function to fetch individual element.
 
 The `getPropertyDescriptor` *(lines 12-14)* is required for when [KO][] does "reflection" on our "array"
 (like checking if "length" property exists) and simply delegates calls to `js/Array`.
 
-### Finish Line
+### The Finish Line
 
 The last change is to modify `observable-ref` once again, this time replacing `into-array` calls
-with newly-created `vector-as-array` function:
+with our newly-created `vector-as-array` function:
 
 {% highlight clojure %}
 (defn observable-ref [r]
@@ -230,7 +231,8 @@ Here is a quick summary of our accomplishments:
 * We've marshaled Clojure data structure created on the Server all the way to the Client using [edn encoding][edn]
 which is a natural textual representation for Clojure data.
 * We've received this data on the client using core.async to make our code look sequential
-* Then we've called regular Clojure functions on received data to extract and sort the headers
+* Then we've [edn-decoded][edn] response and called regular Clojure functions on received data to extract and sort the headers
+* We've animated our HTML page by manipulating only Clojure data structures
 * Finally we've created [KO][] bindings directly to Clojure data without EVER converting it to JavaScript.
 
 Granted, the final step required sacrifices (using experimental JavaScript features), and this is why
