@@ -1,0 +1,57 @@
+# Builds the site with the Jekyll version GitHub Pages used at the last publish
+# (Jekyll 1.2.0, see Gemfile) and deploys it to GitHub Pages.
+name: Build and deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    steps:
+      - uses: actions/checkout@v7
+
+      # pygments.rb 0.5 (pulled in by Jekyll 1.2) drives Pygments through Python 2.
+      - name: Install Python 2
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q python2
+          python2 --version
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.1'
+
+      - name: Install gems
+        run: bundle install --jobs 4
+
+      - name: Build site
+        run: bundle exec jekyll build --safe --trace
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
